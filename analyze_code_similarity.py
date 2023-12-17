@@ -1,6 +1,8 @@
 import ast
 import Levenshtein
 import csv
+import os
+import datetime
 
 
 def generate_ast(code):
@@ -80,11 +82,31 @@ def calculate_inter_group_distances(grouped_codes, codes):
     return inter_group_distances
 
 
+def write_to_csv(file_path, data):
+    with open(file_path, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(data)
+
+
+directory = './'
+current_date = datetime.datetime.now().strftime('%Y%m%d')
+new_directory = f'./crawling_output/{current_date}'
+os.makedirs(new_directory, exist_ok=True)
+output_csv = f'{new_directory}/crawling.csv'
+
+
+codes = []
+names = []
+lines = []
+
 # CSVファイルを開く
-with open('crawling_output/output.csv', 'r') as f:
+with open(output_csv, 'r') as f:
     reader = csv.reader(f)
     # リストに変換
-    codes = [row[2] for row in reader]
+    for row in reader:
+        names.append(row[0])
+        lines.append(row[1])
+        codes.append(row[2])
 
 # 確認のために出力
 # print(codes)
@@ -100,6 +122,20 @@ group_distances = calculate_group_distances(grouped_codes, codes)
 # グループ間の平均編集距離を計算
 inter_group_distances = calculate_inter_group_distances(grouped_codes, codes)
 
-print("Grouped Codes:", grouped_codes)
-print("Group Distances:", group_distances)
-print("Inter-Group Distances:", inter_group_distances)
+# print("Grouped Codes:", grouped_codes)
+# print("Group Distances:", group_distances)
+# print("Inter-Group Distances:", inter_group_distances)
+
+data = []
+
+directory = './'
+current_date = datetime.datetime.now().strftime('%Y%m%d')
+new_directory = f'./analyze_output/{current_date}'
+os.makedirs(new_directory, exist_ok=True)
+output_csv = f'{new_directory}/analyze.csv'
+
+for group_index, (grouped_code) in enumerate(grouped_codes):
+    for code in grouped_code:
+        print(group_index, lines[code], names[code])
+        data.append([group_index, lines[code], names[code]])
+    write_to_csv(output_csv, data)

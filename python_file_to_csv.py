@@ -1,5 +1,6 @@
 import csv
 import os
+import datetime
 
 
 def get_python_files(directory):
@@ -21,8 +22,11 @@ def write_to_csv(file_path, data):
 
 
 def main():
-    directory = './'  # フォルダを指定
-    output_csv = './crawling_output/output.csv'  # 出力するCSVファイル名を指定
+    directory = './'
+    current_date = datetime.datetime.now().strftime('%Y%m%d')
+    new_directory = f'./crawling_output/{current_date}'
+    os.makedirs(new_directory, exist_ok=True)
+    output_csv = f'{new_directory}/crawling.csv'
 
     data = []
     for file_path in get_python_files(directory):
